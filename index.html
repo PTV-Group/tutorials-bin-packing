@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading Space Optimization</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://developer-applications.myptv.com/Tutorials/common/jquery.min.js"></script>
+  </head>
+  
+  <body>
+    <div class="viewport">
+        <div class="wrapper">
+            <h1>Loading Space Optimization</h1>
+            <a href="https://company.ptvgroup.com/">by PTV Group</a>            
+            
+            <div class="entry-settings">
+                <h4>Bin</h4>
+                <h6>[Default is a 40 Ft. container]</h6>
+                <div class="group">
+                    <label>Dimensions</label>
+                    <label>x</label><input id="bin-dimension-x" type="number" min="1" value="240" />cm
+                    <label>y</label><input id="bin-dimension-y" type="number" min="1" value="244" />cm
+                    <label>z</label><input id="bin-dimension-z" type="number" min="1" value="1360"/>cm
+                </div>
+                <div class="group">
+                    <label>Maximum Capacity</label><input id="bin-capacity" type="number" min="0" value="20000"/>kg
+                </div>
+                <div class="group space-between">
+                    <div class="group">
+                        <label>Number</label><input id="bin-number" type="number" min="1" value="1"/>
+                    </div>
+                    <button class="add-entry" id="btn-add-bin">Add your bin</button>
+                </div>
+                <h4>Specified bins</h4>
+                <table id="bins-overview">
+                  <thead>
+                    <tr>
+                      <td>#</td>
+                      <td>Dimensions (cm)</td>
+                      <td>Capacity (kg)</td>
+                      <td>Number</td>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="entry-settings">
+                <h4>Item</h4>
+                <h6>[Default is 10 EUR-pallet of 1m<sup>3</sup>] and 500kg</h6>
+                <div class="group">
+                    <label>Dimensions</label>
+                    <label>x</label><input id="item-dimension-x" type="number" min="1" value="80" />cm
+                    <label>y</label><input id="item-dimension-y" type="number" min="1" value="104" />cm
+                    <label>z</label><input id="item-dimension-z" type="number" min="1" value="120"/>cm
+                </div>
+                <div class="group">
+                    <label>Weight</label><input id="item-weight" type="number" min="0" value="500"/>kg
+                </div>
+                <div class="group space-between">
+                    <div class="group">
+                        <label>Number</label><input id="item-number" type="number" min="1" value="10"/>
+                    </div>
+                    <button class="add-entry" id="btn-add-item">Add your item</button>
+                </div>
+                <h4>Specified items</h4>
+                <table id="items-overview">
+                  <thead>
+                    <tr>
+                      <td>#</td>
+                      <td>Dimensions (cm)</td>
+                      <td>Weight (kg)</td>
+                      <td>Number</td>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="entry-settings">
+                <h4>Focus</h4>
+                <select id="focus">
+                    <option value="BUILD_LAYERS" selected>BUILD_LAYERS</option>
+                    <option value="REDUCE_LOADING_METERS">REDUCE_LOADING_METERS</option>
+                </select>
+            </div>
+
+            <div class="group space-between">
+              <button id="btn-start-optimization" disabled>Optimize your items</button>
+              <button id="clear-data">Clear all data</button>
+            </div>
+
+            <div id="processing-indicator">
+              <div class="loader"></div>
+              <span>
+                The optimization is in progress.<br />
+                This may take a while.
+              </span>
+            </div>
+        </div>
+
+        <div id="binViewer"></div>
+
+        <div id="optimization-results">
+          <div>
+            <div id="bin-switcher" class="group">
+              <button id="previous-bin">&lt;</button>
+              <div class="bin-info">
+                <label id="bin-index">-</label>
+                <label id="bin-id">-</label>
+              </div>              
+              <button id="next-bin">&gt;</button>
+            </div>
+            <div class="key-value"><span>Number of items</span><span id="total-items-count">-</span></div>
+            <div class="key-value"><span>Travel items volume</span><span id="total-items-volume">-</span></div>
+            <div class="key-value"><span>Travel items weight</span><span id="total-items-weight">-</span></div>
+            <div class="key-value"><span>Used weight capacity</span><span id="used-weight-capacity">-</span></div>
+            <div class="key-value"><span>Used volume capacity</span><span id="used-volume-capacity">-</span></div>
+            <div class="key-value"><span>Loading meters</span><span id="loading-meters">-</span></div>
+          </div>
+
+          <div id="kpis">
+            <h3>Optimization results</h3>
+            <h5>Bins</h5>
+            <div class="key-value"><span>Used</span><span id="used-bins">-</span></div>
+            <div class="key-value"><span>Unused</span><span id="unused-bins">-</span></div>
+            <h5>Items</h5>
+            <div class="key-value"><span>Packed</span><span id="packed-items">-</span></div>
+            <div class="key-value"><span>Unpacked</span><span id="unpacked-items">-</span></div>
+          </div>
+        </div>
+    </div>
+
+    <div id="error-log">
+      Oh no... something has gone wrong.<br />
+      The API returned the following:
+      <pre id="error-details"></pre>
+      <button id="close-error-details">Close</button>
+    </div>
+
+    <!-- load viewer functions -->
+    <script src="LoadViewer/three.min.js" charset="utf-8"></script>
+    <script src="LoadViewer/threex.domevents.js" charset="utf-8"></script>
+    <script src="LoadViewer/OrbitControls.js" charset="utf-8"></script>
+    <script src="LoadViewer/packwidget.js" charset="utf-8"></script>
+    <script src="LoadViewer/packWidgetUtils.js" charset="utf-8"></script>
+    <script src="LoadViewer/mapping.js" charset="utf-8"></script>
+    <script src="./convertResponsePackedBins.js"></script>
+    <script src="./loadViewer.js"></script>
+
+    
+    <script src="general-helper-functions.js"></script>
+	<script src="loading-space-optimization.js"></script>
+  </body>
+</html>
