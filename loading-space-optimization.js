@@ -7,7 +7,7 @@
 const api_key = "YOUR_API_KEY";
 const APIEndpoints = {
     StartBinPacking: "https://api.myptv.com/binpacking/v1/bins/async",
-    GetStatus: (binpackingId) => `https://api.myptv.com/binpacking/v1/status/${binpackingId}`,
+    GetStatus: (binpackingId) => `https://api.myptv.com/binpacking/v1/bins/status/${binpackingId}`,
     GetPackedBins: (binpackingId) => `https://api.myptv.com/binpacking/v1/bins/${binpackingId}`
 };
 
